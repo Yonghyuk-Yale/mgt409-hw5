@@ -539,3 +539,15 @@ Let's move on to Problem 11. Now we push to GitHub. I'll push and submit only th
 - What "Before a full 3-ticket run" means: reset the working DB to the original values **before** running all three tickets from the start. That way every full run starts from the same point (cash $3,400, all tickets open) and the results can be compared. It is the same as the shop rule "reset before a full ticket-resolving run."
 - The working DB that is pushed is in its final state after the Problem 9 run (balance $152, all three tickets resolved), so the grader can see the results right away.
 - `output/github_url.txt` — https://github.com/Yonghyuk-Yale/mgt409-hw5
+
+### Prompt 2 (final check from the grader's side)
+
+It looks like it uploaded fine. Now, from the grader's point of view, clone the contents of that URL into a virtual space and grade it. Check carefully against the grading criteria I've sent you, whether it runs well, whether there are any problems, and whether the results come out like the output. It's the final check, so do it accurately and thoroughly!
+
+### What the final check did
+
+- Cloned the GitHub URL fresh into a temporary folder and followed the README in order: virtual environment → install → copy `.env` → MCP server (the `.mcp.json` command and HTTP mode) → backend → dashboard install, build, and run. All worked. Only the ports were changed to avoid ones in use.
+- All 15 backend routes responded as expected: a nonexistent ticket returned 404; re-running a resolved ticket and re-approving an executed payment returned 409.
+- Did one real run in the clone: reset per the README → run 102 (74,214 tokens) → an approval under an agent's name was refused → approving under the grader's name moved cash from $3,400 to $1,000 → closed the ticket. Every step was written to the audit trail, and the run result was saved to a file.
+- An automated cross-file check of 97 items all passed: DB amounts, result JSON fields, runs and tokens in the audit trail, HTML tabs / placeholders / external files, harness figures, smoke-test values, model names (only gpt-6-luna), no customer names in the audit trail, required prompt files, and the Problem 1–11 logs.
+- Fixed one thing: the dashboard's Expected vs Actual tab showed 8/9 for 101's tool match, which differed from the 9/12 in `desk_tickets.html`. The dashboard now counts the same Expected table row by row (9/12, 7/9, 10/12), the matching screenshot in `resolved_board.html` was retaken, and the fix was pushed to GitHub.
