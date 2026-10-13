@@ -136,7 +136,9 @@ function CompareTab({ ticketId, result, trace }: { ticketId: number | null; resu
   const used = new Set(trace.flatMap((l) => l.tools.map((t) => `${l.agent}:${t}`)));
   const hit = (b: boolean) => (result ? (b ? "✅" : "❌") : "⏳");
   const handoffHits = exp.handoffs.filter((h) => pairs.has(`${h.from}>${h.to}`)).length;
-  const toolHits = exp.tools.filter((t) => used.has(`${t.agent}:${t.tool}`)).length;
+  // a row of the Expected table matches when one of its agents used any of its tools
+  const rowHit = (r: (typeof exp.tools)[number]) => r.agents.some((a) => r.tools.some((t) => used.has(`${a}:${t}`)));
+  const toolHits = exp.tools.filter(rowHit).length;
   return (
     <div className="compare">
       <div className="compare__col">
@@ -170,9 +172,16 @@ function CompareTab({ ticketId, result, trace }: { ticketId: number | null; resu
           MCP tools {result && <span className="score">{toolHits}/{exp.tools.length}</span>}
         </h4>
         <ul className="compare__tools">
-          {exp.tools.map((t) => (
-            <li key={`${t.agent}${t.tool}`}>
-              {hit(used.has(`${t.agent}:${t.tool}`))} <code>{t.tool}</code> <span className="muted">by {heroName(t.agent)}</span>
+          {exp.tools.map((r) => (
+            <li key={`${r.agents.join("+")}${r.tools.join("+")}`}>
+              {hit(rowHit(r))}{" "}
+              {r.tools.map((t, i) => (
+                <span key={t}>
+                  {i > 0 && " / "}
+                  <code>{t}</code>
+                </span>
+              ))}{" "}
+              <span className="muted">by {r.agents.map((a) => heroName(a)).join(" / ")}</span>
             </li>
           ))}
         </ul>

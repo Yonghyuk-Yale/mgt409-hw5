@@ -1,14 +1,26 @@
 // The owner's Expected plans from output/desk_tickets.html (Problem 6), in a form the dashboard
 // can compare with what the team actually did.
+// `tools` mirrors the Expected MCP-tool table in desk_tickets.html row by row: a row matches when one
+// of its agents used any tool in it. That way the dashboard's score equals the Actual section's.
 import type { AgentName } from "./types";
+
+export interface ToolRow {
+  agents: AgentName[];
+  tools: string[];
+}
 
 export interface ExpectedPlan {
   firstAgent: AgentName;
   why: string;
   // who hands work to whom ("boss" -> specialist, or specialist <-> specialist)
   handoffs: { from: AgentName; to: AgentName; label: string }[];
-  tools: { agent: AgentName; tool: string }[];
+  tools: ToolRow[];
 }
+
+const row = (agents: AgentName | AgentName[], ...tools: string[]): ToolRow => ({
+  agents: Array.isArray(agents) ? agents : [agents],
+  tools,
+});
 
 export const EXPECTED: Record<number, ExpectedPlan> = {
   101: {
@@ -21,15 +33,18 @@ export const EXPECTED: Record<number, ExpectedPlan> = {
       { from: "boss", to: "customer_service", label: "Customer-side view + draft" },
     ],
     tools: [
-      { agent: "inventory", tool: "check_stock_for_size" },
-      { agent: "inventory", tool: "get_stock_overview" },
-      { agent: "inventory", tool: "list_vendors" },
-      { agent: "inventory", tool: "estimate_restock" },
-      { agent: "accounting", tool: "get_cash_position" },
-      { agent: "accounting", tool: "list_approval_requests" },
-      { agent: "accounting", tool: "create_payment_request" },
-      { agent: "customer_service", tool: "get_customer_history" },
-      { agent: "customer_service", tool: "save_customer_draft" },
+      row("boss", "get_ticket"),
+      row("inventory", "check_stock_for_size"),
+      row("inventory", "get_stock_overview"),
+      row("inventory", "list_vendors"),
+      row("inventory", "estimate_restock"),
+      row("accounting", "get_cash_position"),
+      row("accounting", "list_payments", "list_approval_requests"),
+      row("accounting", "create_payment_request"),
+      row("accounting", "create_purchase_order_request"),
+      row("customer_service", "get_customer_history"),
+      row("customer_service", "save_customer_draft", "revise_customer_draft"),
+      row("boss", "list_approval_requests", "list_customer_drafts"),
     ],
   },
   102: {
@@ -41,12 +56,15 @@ export const EXPECTED: Record<number, ExpectedPlan> = {
       { from: "accounting", to: "inventory", label: "Restocks competing for the same cash" },
     ],
     tools: [
-      { agent: "facilities", tool: "get_rent_due_for_lease" },
-      { agent: "facilities", tool: "list_leases" },
-      { agent: "facilities", tool: "list_payments" },
-      { agent: "accounting", tool: "get_cash_position" },
-      { agent: "accounting", tool: "create_payment_request" },
-      { agent: "boss", tool: "list_open_tickets" },
+      row("boss", "get_ticket"),
+      row("facilities", "get_rent_due_for_lease"),
+      row("facilities", "list_leases"),
+      row("facilities", "list_payments"),
+      row(["facilities", "accounting"], "get_cash_position"),
+      row("accounting", "list_approval_requests"),
+      row("accounting", "create_payment_request"),
+      row("inventory", "estimate_restock"),
+      row("boss", "list_open_tickets", "get_cash_position"),
     ],
   },
   103: {
@@ -59,15 +77,18 @@ export const EXPECTED: Record<number, ExpectedPlan> = {
       { from: "boss", to: "customer_service", label: "Customer view at the end + draft" },
     ],
     tools: [
-      { agent: "inventory", tool: "check_stock_for_size" },
-      { agent: "inventory", tool: "get_stock_overview" },
-      { agent: "inventory", tool: "estimate_restock" },
-      { agent: "accounting", tool: "get_price_and_margin_for_sku" },
-      { agent: "accounting", tool: "evaluate_discount" },
-      { agent: "accounting", tool: "get_cash_position" },
-      { agent: "accounting", tool: "create_discount_request" },
-      { agent: "customer_service", tool: "get_customer_history" },
-      { agent: "customer_service", tool: "save_customer_draft" },
+      row("boss", "get_ticket"),
+      row("inventory", "check_stock_for_size"),
+      row("inventory", "get_stock_overview"),
+      row("inventory", "list_vendors", "estimate_restock"),
+      row("accounting", "get_price_and_margin_for_sku"),
+      row("accounting", "evaluate_discount"),
+      row("accounting", "get_cash_position"),
+      row("accounting", "create_discount_request"),
+      row("accounting", "create_purchase_order_request"),
+      row("customer_service", "get_customer_history"),
+      row("customer_service", "save_customer_draft", "revise_customer_draft"),
+      row("boss", "list_open_tickets", "list_approval_requests", "list_customer_drafts"),
     ],
   },
 };
