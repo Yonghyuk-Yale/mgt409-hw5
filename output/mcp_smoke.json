@@ -1,0 +1,142 @@
+{
+  "description": "Problem 4 smoke test: each campus-customs-ops MCP tool called once through the real MCP connection in Claude Code, then checked against direct SQL on data/campus_customs_new.db.",
+  "db": "data/campus_customs_new.db",
+  "db_state_note": "Recorded on 2026-10-11 against the fresh working copy, before any payment. Later, in the Problem 9 run, the owner paid invoice 501 and the rent, so the working DB now shows invoice 501 'paid' and lease 1 next_due 2026-10-02. Stock and pricing values (tickets 101 and 103) are unchanged. To re-check these exact values, reset the working DB first (POST /api/reset) and run the same tools.",
+  "tests": [
+    {
+      "ticket": 101,
+      "user_prompt": "화이트 티 S 사이즈 재고 1장 있어?",
+      "tool": "check_stock_for_size",
+      "tool_args": {
+        "sku": "CC-TEE-WHITE",
+        "size": "S",
+        "qty_needed": 1
+      },
+      "tool_result": {
+        "found": true,
+        "sku": "CC-TEE-WHITE",
+        "name": "Classic Bulldog Tee",
+        "size": "S",
+        "qty_on_hand": 0,
+        "location": "Aisle B",
+        "other_sizes": [
+          {
+            "size": "L",
+            "qty_on_hand": 3
+          },
+          {
+            "size": "M",
+            "qty_on_hand": 5
+          },
+          {
+            "size": "XL",
+            "qty_on_hand": 2
+          }
+        ],
+        "qty_needed": 1,
+        "shortfall": 1,
+        "can_fill_now": false
+      },
+      "db_check": {
+        "sql": "SELECT size, qty, location FROM inventory WHERE sku='CC-TEE-WHITE'",
+        "db_values": [
+          {
+            "size": "L",
+            "qty": 3,
+            "location": "Aisle B"
+          },
+          {
+            "size": "M",
+            "qty": 5,
+            "location": "Aisle B"
+          },
+          {
+            "size": "S",
+            "qty": 0,
+            "location": "Aisle B"
+          },
+          {
+            "size": "XL",
+            "qty": 2,
+            "location": "Aisle B"
+          }
+        ],
+        "matches_tool": true
+      }
+    },
+    {
+      "ticket": 102,
+      "user_prompt": "1번 임대 계약 임대료랑 납부일, 연체됐어?",
+      "tool": "get_rent_due_for_lease",
+      "tool_args": {
+        "lease_id": 1
+      },
+      "tool_result": {
+        "found": true,
+        "lease_id": 1,
+        "space_name": "Chapel Street shop",
+        "landlord": "Elm City Properties",
+        "monthly_rent": 2400,
+        "next_due": "2026-09-02",
+        "notes": null,
+        "shop_today": "2026-08-31",
+        "days_until_due": 2,
+        "is_overdue": false
+      },
+      "db_check": {
+        "sql": [
+          "SELECT id, space_name, landlord, monthly_rent, next_due, notes FROM leases WHERE id=1",
+          "SELECT date_today FROM desk"
+        ],
+        "db_values": {
+          "id": 1,
+          "space_name": "Chapel Street shop",
+          "landlord": "Elm City Properties",
+          "monthly_rent": 2400.0,
+          "next_due": "2026-09-02",
+          "notes": null,
+          "date_today": "2026-08-31",
+          "days_until_due_recomputed": 2,
+          "is_overdue_recomputed": false
+        },
+        "matches_tool": true
+      }
+    },
+    {
+      "ticket": 103,
+      "user_prompt": "네이비 후디 원가랑 정가, 마진 얼마야?",
+      "tool": "get_price_and_margin_for_sku",
+      "tool_args": {
+        "sku": "CC-HOOD-NAVY"
+      },
+      "tool_result": {
+        "found": true,
+        "sku": "CC-HOOD-NAVY",
+        "name": "Basic Hoodie Big Yale",
+        "unit_cost": 22,
+        "list_price": 58,
+        "unit_margin_at_list": 36,
+        "margin_pct_at_list": 62.1
+      },
+      "db_check": {
+        "sql": [
+          "SELECT sku, unit_cost, list_price FROM pricing WHERE sku='CC-HOOD-NAVY'",
+          "SELECT DISTINCT name FROM inventory WHERE sku='CC-HOOD-NAVY'"
+        ],
+        "db_values": {
+          "sku": "CC-HOOD-NAVY",
+          "name": "Basic Hoodie Big Yale",
+          "unit_cost": 22.0,
+          "list_price": 58.0,
+          "unit_margin_recomputed": 36.0,
+          "margin_pct_recomputed": 62.1
+        },
+        "matches_tool": true
+      }
+    }
+  ],
+  "summary": {
+    "tools_tested": 3,
+    "all_match_db": true
+  }
+}

@@ -1,0 +1,42 @@
+# ---- Secrets: never commit ----
+# Copy .env.example to .env and fill it in locally. Only the example is committed.
+.env
+.env.*
+!.env.example
+
+# ---- Course data ----
+# data/ IS committed so graders can start right away:
+#   data/campus_customs.db      the original (never modified)
+#   data/campus_customs_new.db  the working copy, left in its final state after the graded run
+# The zip duplicates data/campus_customs.db, and SQLite side files are temporary.
+data.zip
+*.db-journal
+*.db-wal
+*.db-shm
+data/*.tmp
+
+# ---- Python ----
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# ---- Front end ----
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# ---- Runtime leftovers ----
+output/*.tmp
+output/audit_trail.broken-*.json
+output/audit_trail.dev-tests-*.json
+*.log
+
+# ---- Editor / OS ----
+.vscode/
+.idea/
+.claude/
+.DS_Store
+Thumbs.db
+desktop.ini

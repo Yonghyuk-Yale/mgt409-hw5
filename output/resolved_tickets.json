@@ -1,0 +1,341 @@
+{
+  "generated_from": "Problem 9 real runs on a freshly reset working DB (data/campus_customs_new.db)",
+  "model": "gpt-6-luna",
+  "owner": "Yonghyuk Choi",
+  "starting_checking_balance": 3400.0,
+  "ending_checking_balance": 152.0,
+  "tickets": [
+    {
+      "id": 101,
+      "type": "customer_order",
+      "requester": "Tauhid Zaman",
+      "subject": "Bulldog tee",
+      "final_status": "resolved",
+      "short_outcome": "Size S was out of stock. The owner approved paying overdue invoice 501 ($840.00), which unblocked Bulldog Print Co, and a 1-unit size-S restock ($8.00). Customer Service's draft apologizes and offers M/L/XL meanwhile.",
+      "first_agent_called": "inventory",
+      "runs": [
+        {
+          "run_id": "20261012T221136-t101-4d5615",
+          "feedback": null,
+          "tokens": 84489,
+          "agent_loops": 5,
+          "boss_headline": "Review invoice payment request #1 and the unsent customer update today; keep rent first, and approve the $8.00 size-S restock request only after invoice 501 is cleared."
+        }
+      ],
+      "tokens_total": 84489,
+      "agent_contributions": {
+        "Boss": {
+          "did": "Planned Inventory → Accounting; final call: Review invoice payment request #1 and the unsent customer update today; keep rent first, and approve the $8.00 size-S restock request only after invoice 501 is cleared.",
+          "tools": [
+            "get_shop_today",
+            "get_cash_position",
+            "list_open_tickets"
+          ],
+          "tokens": 20745
+        },
+        "Inventory": {
+          "did": "CC-TEE-WHITE size S has 0 on hand against a need of 1, so the shortfall is 1 and it cannot be filled from current stock. The specialty-matched vendor, Bulldog Print Co, quotes a 1-unit restock at $8.00, but invoice 501 blocks shipment; there is no confirmed arrival date while it remains unpaid. No inbound supply is confirmed by the available ticket/inventory data; other sizes of this tee are in stock, but customer acceptance is unknown.",
+          "tools": [
+            "get_ticket",
+            "get_shop_today",
+            "check_stock_for_size",
+            "list_vendors",
+            "estimate_restock"
+          ],
+          "tokens": 17435
+        },
+        "Accounting": {
+          "did": "Cash covers the overdue $840.00 invoice, the $2,400.00 rent due 2026-09-02, and the recommended $8.00 restock PO, leaving $152.00 if all are paid/ordered; prioritize rent, then the invoice that unblocks the customer restock, then the PO. Filed invoice payment request #1 and PO request #2, both pending human approval; the PO is blocked by open invoice 501 and no arrival date is confirmed.",
+          "tools": [
+            "get_ticket",
+            "get_cash_position",
+            "list_approval_requests",
+            "create_payment_request",
+            "create_purchase_order_request"
+          ],
+          "tokens": 22973
+        },
+        "Customer Service": {
+          "did": "Stance: support with changes. I support the plan with the change that the customer be updated now, without a promised restock date. Size S is unavailable; the same tee in other sizes is an option, while the exact-size restock is still blocked pending invoice payment and human approvals. I saved a draft explaining this and apologizing; it has not been sent.",
+          "tools": [
+            "get_customer_history",
+            "list_customer_drafts",
+            "get_shop_today",
+            "save_customer_draft"
+          ],
+          "tokens": 23336
+        }
+      },
+      "delegations": [
+        {
+          "from": "boss",
+          "to": "inventory",
+          "phase": "step",
+          "run_id": "20261012T221136-t101-4d5615"
+        },
+        {
+          "from": "boss",
+          "to": "accounting",
+          "phase": "step",
+          "run_id": "20261012T221136-t101-4d5615"
+        }
+      ],
+      "human_decisions": [
+        {
+          "request_id": 1,
+          "kind": "invoice_payment",
+          "summary": "Pay invoice 501 to Bulldog Print Co ($840.00, due 2026-08-28)",
+          "amount": 840.0,
+          "unit_price": null,
+          "requested_by": "accounting",
+          "decision": "approved",
+          "decided_by": "Yonghyuk Choi",
+          "executed": true,
+          "payment_id": 1,
+          "cash_moved": 840.0
+        },
+        {
+          "request_id": 2,
+          "kind": "purchase_order",
+          "summary": "Order 1 x CC-TEE-WHITE size S from Bulldog Print Co ($8.00)",
+          "amount": 8.0,
+          "unit_price": 8.0,
+          "requested_by": "accounting",
+          "decision": "approved",
+          "decided_by": "Yonghyuk Choi",
+          "executed": true,
+          "payment_id": 2,
+          "cash_moved": 8.0
+        }
+      ],
+      "customer_drafts": [
+        {
+          "id": 1,
+          "subject": "Update on your Bulldog tee",
+          "status": "draft — never sent by the system"
+        }
+      ],
+      "cash_spent": 848.0,
+      "resolved_by": "Yonghyuk Choi (POST /api/tickets/{id}/resolve after all decisions)"
+    },
+    {
+      "id": 102,
+      "type": "rent_notice",
+      "requester": "Elm City Properties",
+      "subject": "Rent due",
+      "final_status": "resolved",
+      "short_outcome": "The landlord's notice matched lease 1. The owner approved the $2,400.00 rent before the 2026-09-02 due date; the lease's next due date moved to 2026-10-02.",
+      "first_agent_called": "facilities",
+      "runs": [
+        {
+          "run_id": "20261012T221259-t102-26cf37",
+          "feedback": null,
+          "tokens": 82590,
+          "agent_loops": 5,
+          "boss_headline": "Approve rent payment request #3 for $2,400.00 today so the Chapel Street shop can meet the 2026-09-02 due date."
+        }
+      ],
+      "tokens_total": 82590,
+      "agent_contributions": {
+        "Boss": {
+          "did": "Planned Facilities → Accounting; final call: Approve rent payment request #3 for $2,400.00 today so the Chapel Street shop can meet the 2026-09-02 due date.",
+          "tools": [
+            "get_shop_today",
+            "get_cash_position",
+            "list_open_tickets",
+            "list_approval_requests"
+          ],
+          "tokens": 25525
+        },
+        "Facilities": {
+          "did": "Lease 1 is for the Chapel Street shop: rent of $2,400.00 is due 2026-09-02, in 2 days, and is not overdue. Rent can be paid on time, but the cash margin is tight: after the $840.00 overdue invoice, rent, and pending $8.00 purchase order, $152.00 remains. Accounting filed rent request #3; no lease-specific constraint or immediate escalation trigger was found, but approval must occur before the due date.",
+          "tools": [
+            "get_ticket",
+            "get_rent_due_for_lease",
+            "list_leases",
+            "list_payments",
+            "get_cash_position",
+            "list_approval_requests",
+            "ask_teammate"
+          ],
+          "tokens": 19182
+        },
+        "Accounting": {
+          "did": "Rent request #3 already exists and is pending human approval, so no duplicate was filed. The $2,400.00 rent is due 2026-09-02; after the overdue $840.00 invoice and the pending $8.00 ticket 101 purchase order, rent can be paid without taking cash negative, leaving $152.00. Prioritize the overdue invoice first, rent second, and defer the discretionary PO until those obligations are covered.",
+          "tools": [
+            "get_ticket",
+            "get_cash_position",
+            "list_approval_requests",
+            "get_rent_due_for_lease",
+            "list_approval_requests",
+            "create_payment_request",
+            "list_payments"
+          ],
+          "tokens": 37883
+        }
+      },
+      "delegations": [
+        {
+          "from": "boss",
+          "to": "facilities",
+          "phase": "step",
+          "run_id": "20261012T221259-t102-26cf37"
+        },
+        {
+          "from": "facilities",
+          "to": "accounting",
+          "phase": "delegation",
+          "run_id": "20261012T221259-t102-26cf37"
+        },
+        {
+          "from": "boss",
+          "to": "accounting",
+          "phase": "step",
+          "run_id": "20261012T221259-t102-26cf37"
+        }
+      ],
+      "human_decisions": [
+        {
+          "request_id": 3,
+          "kind": "rent_payment",
+          "summary": "Pay rent for Chapel Street shop to Elm City Properties ($2,400.00, due 2026-09-02)",
+          "amount": 2400.0,
+          "unit_price": null,
+          "requested_by": "accounting",
+          "decision": "approved",
+          "decided_by": "Yonghyuk Choi",
+          "executed": true,
+          "payment_id": 3,
+          "cash_moved": 2400.0
+        }
+      ],
+      "customer_drafts": [],
+      "cash_spent": 2400.0,
+      "resolved_by": "Yonghyuk Choi (POST /api/tickets/{id}/resolve after all decisions)"
+    },
+    {
+      "id": 103,
+      "type": "price_override",
+      "requester": "Yale AI Club",
+      "subject": "Bulk hoodie discount",
+      "final_status": "resolved",
+      "short_outcome": "Only 8 of 20 size-M hoodies exist. After the owner's feedback, the team proposed a stock-only mix of 8 M + 12 L at $36.67 each ($733.40, the 40% margin floor). The owner approved the quote; no cash moved. Customer Service's draft asks the club to confirm the mix.",
+      "first_agent_called": "inventory",
+      "runs": [
+        {
+          "run_id": "20261012T221416-t103-e3399b",
+          "feedback": null,
+          "tokens": 95822,
+          "agent_loops": 5,
+          "boss_headline": "Review draft 2 and ask Yale AI Club whether a mixed-size order could work; do not promise a discount or restock date."
+        },
+        {
+          "run_id": "20261012T221657-t103-792af5",
+          "feedback": "Please propose a concrete bulk discount price within the 40% margin policy for the hoodies we can actually supply (for example a size mix from stock), so I can approve a quote for the club.",
+          "tokens": 95609,
+          "agent_loops": 5,
+          "boss_headline": "Review discount request 4 for $36.67 per hoodie ($733.40 total) on a 20-piece mix of 8 M and 12 L; the original 20-M request cannot be filled from current stock."
+        }
+      ],
+      "tokens_total": 191431,
+      "agent_contributions": {
+        "Boss": {
+          "did": "Planned Inventory → Accounting; final call: Review discount request 4 for $36.67 per hoodie ($733.40 total) on a 20-piece mix of 8 M and 12 L; the original 20-M request cannot be filled from current stock.",
+          "tools": [
+            "get_shop_today",
+            "get_cash_position",
+            "list_open_tickets",
+            "list_approval_requests",
+            "get_ticket"
+          ],
+          "tokens": 19785
+        },
+        "Inventory": {
+          "did": "CC-HOOD-NAVY has 32 units on hand across sizes, enough for a 20-unit order only if the club accepts a size mix; the original request for 20 size M is short by 12. A feasible 20-unit mix is 8 M and 12 L. The concrete maximum-discount quote within the 40% margin policy is $36.67 per hoodie ($733.40 total), subject to human approval and the club accepting that mix.",
+          "tools": [
+            "get_ticket",
+            "check_stock_for_size",
+            "get_stock_overview",
+            "get_price_and_margin_for_sku",
+            "list_approval_requests",
+            "evaluate_discount"
+          ],
+          "tokens": 23215
+        },
+        "Accounting": {
+          "did": "A compliant concrete quote is $36.67 per hoodie, or $733.40 for 20, at a 40.0% gross margin; the validated supplyable mix is 8 M and 12 L, not 20 M. Discount request 4 is pending human approval, and any quote to the club must remain contingent on its accepting that size mix.",
+          "tools": [
+            "get_ticket",
+            "get_cash_position",
+            "get_price_and_margin_for_sku",
+            "evaluate_discount",
+            "list_approval_requests",
+            "create_discount_request"
+          ],
+          "tokens": 28799
+        },
+        "Customer Service": {
+          "did": "Stance: support with changes. The proposed approach is customer-appropriate if the club is told plainly that the original 20-M request cannot be filled from current stock and the mixed-size option is conditional. I revised the existing draft to present the proposed price as still awaiting approval and ask whether the 8 M / 12 L mix works; nothing was sent.",
+          "tools": [
+            "get_ticket",
+            "get_customer_history",
+            "list_customer_drafts",
+            "list_approval_requests",
+            "revise_customer_draft"
+          ],
+          "tokens": 23810
+        }
+      },
+      "delegations": [
+        {
+          "from": "boss",
+          "to": "inventory",
+          "phase": "step",
+          "run_id": "20261012T221416-t103-e3399b"
+        },
+        {
+          "from": "boss",
+          "to": "accounting",
+          "phase": "step",
+          "run_id": "20261012T221416-t103-e3399b"
+        },
+        {
+          "from": "boss",
+          "to": "inventory",
+          "phase": "step",
+          "run_id": "20261012T221657-t103-792af5"
+        },
+        {
+          "from": "boss",
+          "to": "accounting",
+          "phase": "step",
+          "run_id": "20261012T221657-t103-792af5"
+        }
+      ],
+      "human_decisions": [
+        {
+          "request_id": 4,
+          "kind": "discount",
+          "summary": "Quote 20 x CC-HOOD-NAVY at $36.67 (36.8% off list, 40.0% margin)",
+          "amount": 0.0,
+          "unit_price": 36.67,
+          "requested_by": "accounting",
+          "decision": "approved",
+          "decided_by": "Yonghyuk Choi",
+          "executed": true,
+          "payment_id": null,
+          "cash_moved": 0.0
+        }
+      ],
+      "customer_drafts": [
+        {
+          "id": 2,
+          "subject": "Update on your navy hoodie request",
+          "status": "draft — never sent by the system"
+        }
+      ],
+      "cash_spent": 0,
+      "resolved_by": "Yonghyuk Choi (POST /api/tickets/{id}/resolve after all decisions)"
+    }
+  ]
+}
